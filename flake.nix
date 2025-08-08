@@ -1,3 +1,4 @@
+
 {
   description = "Flake for Raspberry Pi cluster - federated learning + CV + Docker & K8s";
 
@@ -13,21 +14,22 @@
           inherit system;
           config.allowUnfree = true;
         };
+
+        pythonEnv = pkgs.python311.withPackages (ps: with ps; [
+          pip virtualenv numpy scipy pandas scikit-learn pytorch torchvision
+        ]);
       in {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
-            zellij git curl docker kubernetes-cli
-            python311 python311Packages.pip python311Packages.virtualenv
-            python311Packages.numpy python311Packages.scipy
-            python311Packages.pandas python311Packages.scikit-learn
-            python311Packages.pytorch python311Packages.torchvision
+            zellij git curl docker kubectl
+            pythonEnv
             cmake gcc pkg-config
-          ];  # Note: k3s (the Kubernetes server) should be installed via apt on the master node
+          ];
+
           shellHook = ''
-            echo "🖥️  Welcome to Pi Cluster devShell (${system})"
-            export PYTHONPATH=$PWD
+            echo "Welcome to the Raspberry Pi cluster dev shell!"
+            export PYTHONPATH=$PYTHONPATH:${pythonEnv.sitePackages}
           '';
         };
-      }
-    );
+      });
 }
