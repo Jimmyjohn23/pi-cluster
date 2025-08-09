@@ -21,7 +21,7 @@
       in {
         devShells.default = pkgs.mkShell {
           buildInputs = with pkgs; [
-            zellij git curl docker kubectl
+            zellij git curl kubectl
             neovim
             pythonEnv
             cmake gcc pkg-config
